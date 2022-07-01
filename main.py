@@ -21,7 +21,7 @@ def extract_lang_and_date(index_message_tuple):
     }
     return result
 
-data = read_file_and_set_message_lang('resources/result.json')
+data = read_file_and_set_message_lang('resources/result_test.json')
 minimized_messages = list(map(extract_lang_and_date, enumerate(data["messages"])))
 number_of_messages_by_weeks = {}
 for m in minimized_messages:
@@ -32,15 +32,13 @@ for m in minimized_messages:
 messages_percentage = {}
 for week_start, messages_counts in number_of_messages_by_weeks.items():
     if week_start not in messages_percentage:
-        messages_percentage[week_start] = {'uk': 0, 'ru': 0}
+        messages_percentage[week_start] = {'uk': 0.0, 'ru': 0.0}
     total_number_of_messages_per_week = messages_counts['uk'] + messages_counts['ru']
-    # print(f"total number of messages: {total_number_of_messages_per_week}. uk: {messages_counts['uk']}. ru: {messages_counts['ru']}")
     uk_percentage = percentage(messages_counts['uk'], total_number_of_messages_per_week)
-    # print(f"uk percentage: {uk_percentage}")
     ru_percentage = percentage(messages_counts['ru'], total_number_of_messages_per_week)
-    # print(f"ru percentage: {ru_percentage}")
     messages_percentage[week_start]['uk'] = uk_percentage
     messages_percentage[week_start]['ru'] = ru_percentage
+    print(f"Week: {week_start}. Total number of messages: {total_number_of_messages_per_week}. Uk: {messages_counts['uk']}. Ru: {messages_counts['ru']}. Uk percentage: {uk_percentage}. Ru percentage: {ru_percentage}")
 
 result = {
     'week_start': [],
