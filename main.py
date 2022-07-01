@@ -1,79 +1,56 @@
-import json
-import spacy
-from spacy.language import Language
-from spacy_langdetect import LanguageDetector
-import pandas as pd
-from time import sleep
-
-def get_lang_detector(nlp, name):
-    return LanguageDetector()
-
-nlp = spacy.load("en_core_web_sm")
-Language.factory("language_detector", func=get_lang_detector)
-nlp.add_pipe('language_detector', last=True)
-# text = 'This is an english text.'
-# text = "Er lebt mit seinen Eltern und seiner Schwester in Berlin."
-text = "Привіт, світ"
-
-doc = nlp(text)
-print(doc._.language)
+from data_preparation import read_file_and_set_message_lang
+from datetime import datetime, timedelta
+import pickle
 
 
-def is_message_relevant(message):
-    if "type" not in message or message["type"] is None or message["type"] != "message":
-        return False
-    if "forwarded_from" in message:
-        return False
-    if "text" not in message or message["text"] is None or (isinstance(message["text"], str) and message["text"].strip() == ""):
-        return False
-    return True
+def percentage(part, whole):
+    return 100 * float(part)/float(whole)
 
 
-def remove_formatting(original_text):
-    result_text_list = []
-    for text_element in original_text:
-        if isinstance(text_element, str):
-            result_text_list.append(text_element)
-        else:
-            if (text_element["type"] != "mention"):
-                result_text_list.append(text_element["text"])
-
-    return ''.join(result_text_list)
-
-
-def transform_text(index_message_tuple):
+def extract_lang_and_date(index_message_tuple):
     index = index_message_tuple[0]
     message = index_message_tuple[1]
-    print(f"\rTransforming text: {index}", end='', flush=True)
-    original_text = message["text"]
-    if isinstance(original_text, str):
-        message["text_normalized"] = message["text"]
-        return message
-    else:
-        message_with_removed_formatting = remove_formatting(original_text)
-        message["text_normalized"] = message_with_removed_formatting
-        return message
+    dt = datetime.fromisoformat(message["date"])
+    week_start = dt - timedelta(days=dt.weekday())
+    result = {
+        'lang': message["detected_lang"],
+        'date': dt,
+        'date_str': message["date"],
+        'beginning_of_week': week_start,
+        'beginning_of_week_str': week_start.strftime("%d/%m/%Y"),
+    }
+    return result
 
+data = read_file_and_set_message_lang('resources/result.json')
+minimized_messages = list(map(extract_lang_and_date, enumerate(data["messages"])))
+number_of_messages_by_weeks = {}
+for m in minimized_messages:
+    if m['beginning_of_week_str'] not in number_of_messages_by_weeks:
+        number_of_messages_by_weeks[m['beginning_of_week_str']] = {'uk': 0, 'ru': 0}
+    number_of_messages_by_weeks[m['beginning_of_week_str']][m['lang']] = number_of_messages_by_weeks[m['beginning_of_week_str']][m['lang']] + 1
 
-def detect_lang(index_message_tuple):
-    index = index_message_tuple[0]
-    message = index_message_tuple[1]
-    print(f"\rTransforming text: {index}", end='', flush=True)
-    doc1 = nlp(message["text_normalized"])
-    message["detected_lang"] = doc1._.language["language"]
-    message["detected_lang_score"] = doc1._.language["score"]
-    return message
+messages_percentage = {}
+for week_start, messages_counts in number_of_messages_by_weeks.items():
+    if week_start not in messages_percentage:
+        messages_percentage[week_start] = {'uk': 0, 'ru': 0}
+    total_number_of_messages_per_week = messages_counts['uk'] + messages_counts['ru']
+    # print(f"total number of messages: {total_number_of_messages_per_week}. uk: {messages_counts['uk']}. ru: {messages_counts['ru']}")
+    uk_percentage = percentage(messages_counts['uk'], total_number_of_messages_per_week)
+    # print(f"uk percentage: {uk_percentage}")
+    ru_percentage = percentage(messages_counts['ru'], total_number_of_messages_per_week)
+    # print(f"ru percentage: {ru_percentage}")
+    messages_percentage[week_start]['uk'] = uk_percentage
+    messages_percentage[week_start]['ru'] = ru_percentage
 
+result = {
+    'week_start': [],
+    'uk_percentage': [],
+    'ru_percentage': []
+}
 
-with open('resources/result.json') as json_file:
-    data = json.load(json_file)
-    df = pd.DataFrame(data["messages"])
-    print(f"original messages length: {len(data['messages'])}")
-    messages = list(filter(is_message_relevant, data["messages"]))
-    print(f"filtered messages length: {len(messages)}")
-    mapped_messages = list(map(transform_text, enumerate(messages)))
-    messages_with_detected_languages = list(map(detect_lang, enumerate(messages)))
-    df1 = pd.DataFrame(messages_with_detected_languages, columns=["detected_lang", "detected_lang_score", "text_normalized"])
-    print(df1['detected_lang'].unique())
-    # df1.loc[df1['detected_lang'] == 'uk'].sort_values('detected_lang_score') || print(item, sep=' ', end='', flush=True)
-    print("hello")
+for week_start, language_percentages in messages_percentage.items():
+    result['week_start'].append(week_start)
+    result['uk_percentage'].append(language_percentages['uk'])
+    result['ru_percentage'].append(language_percentages['ru'])
+
+pickle.dump(result, open( "resources/save.p", "wb"))
