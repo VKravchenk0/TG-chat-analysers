@@ -21,7 +21,8 @@ def read_file_and_set_message_lang(input_file_location):
         data = json.load(json_file)
         print(f"original messages length: {len(data['messages'])}")
         messages = filter_only_text_messages(data)
-        messages = remove_formatting(messages)
+        messages1 = filter_users(messages)
+        messages = remove_formatting(messages1)
         messages = squash_sequential_message_from_same_person(messages)
         messages = detect_language(messages)
         messages = remove_messages_in_irrelevant_languages(messages)
@@ -44,6 +45,17 @@ def is_text_message(message):
             isinstance(message["text"], str) and message["text"].strip() == ""):
         return False
     return True
+
+
+def filter_users(messages):
+    messages = list(filter(user_is_not_in_stop_list, messages))
+    print(f"Removed users from stop list. Messages left: {len(messages)}")
+    return messages
+
+
+def user_is_not_in_stop_list(message):
+    user_is_in_stop_list = message['from_id'] in ['user168370994', 'user309233391', 'user56326953', 'user397363139']
+    return not user_is_in_stop_list
 
 
 def remove_formatting(messages):
