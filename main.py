@@ -20,7 +20,7 @@ def extract_lang_and_date(index_message_tuple):
     }
     return result
 
-data = read_file_and_set_message_lang('resources/result_test.json')
+data = read_file_and_set_message_lang('resources/result.json')
 minimized_messages = list(map(extract_lang_and_date, enumerate(data["messages"])))
 number_of_messages_by_weeks = {}
 for m in minimized_messages:
