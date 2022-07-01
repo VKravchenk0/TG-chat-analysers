@@ -10,12 +10,11 @@ def percentage(part, whole):
 def extract_lang_and_date(index_message_tuple):
     index = index_message_tuple[0]
     message = index_message_tuple[1]
-    dt = datetime.fromisoformat(message["date"])
+    dt = message["thread_start_date"] # to understand thread_start_date - see squash_sequential_message_from_same_person function
     week_start = dt - timedelta(days=dt.weekday())
     result = {
         'lang': message["detected_lang"],
         'date': dt,
-        'date_str': message["date"],
         'beginning_of_week': week_start,
         'beginning_of_week_str': week_start.strftime("%d/%m/%Y"),
     }

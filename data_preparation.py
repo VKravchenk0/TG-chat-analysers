@@ -4,6 +4,7 @@ from spacy.language import Language
 from spacy_langdetect import LanguageDetector
 import pandas as pd
 import time
+from datetime import datetime
 
 
 def get_lang_detector(nlp, name):
@@ -21,6 +22,7 @@ def read_file_and_set_message_lang(input_file_location):
         print(f"original messages length: {len(data['messages'])}")
         messages = filter_only_text_messages(data)
         messages = remove_formatting(messages)
+        messages = squash_sequential_message_from_same_person(messages)
         messages = detect_language(messages)
         messages = remove_messages_in_irrelevant_languages(messages)
         data["messages"] = messages
@@ -58,11 +60,10 @@ def remove_formatting_from_single_message(index_message_tuple):
     print(f"\rTransforming text: {index}", end='', flush=True)
     original_text = message["text"]
     if isinstance(original_text, str):
-        message["text_normalized"] = message["text"]
         return message
     else:
         message_with_removed_formatting = remove_formatting_from_text(original_text)
-        message["text_normalized"] = message_with_removed_formatting
+        message["text"] = message_with_removed_formatting
         return message
 
 
@@ -78,6 +79,35 @@ def remove_formatting_from_text(original_text):
     return ''.join(result_text_list)
 
 
+def squash_sequential_message_from_same_person(messages):
+    print(f"Number of messages before squashing: {len(messages)}")
+    result = []
+    for m in messages:
+        message_date = datetime.fromisoformat(m["date"])
+        if result and messages_from_the_same_sender(result[-1], m):
+            last_message_in_result_list = result[-1]
+            time_diff = (message_date - last_message_in_result_list["thread_start_date"]).total_seconds()
+            # print(f"Messages with ids {m['id']} and {last_message_in_result_list['id']} have time difference of {time_diff} seconds")
+            if time_diff < 120:
+                # print("Squashing messages")
+                last_message_in_result_list["thread_start_date"] = message_date
+                last_message_in_result_list["text"] = result[-1]["text"] + '\n' + m["text"]
+                continue
+
+        append_message_to_result_list(m, message_date, result)
+    print(f"Number of messages after squashing: {len(result)}")
+    return result
+
+
+def messages_from_the_same_sender(m1, m2):
+    return m1['from_id'] == m2['from_id']
+
+
+def append_message_to_result_list(m, message_date, result):
+    m["thread_start_date"] = message_date
+    result.append(m)
+
+
 def detect_language(mapped_messages):
     language_mapping_start_time = time.time()
     messages_with_detected_languages = list(map(detect_language_of_single_message, enumerate(mapped_messages)))
@@ -90,7 +120,7 @@ def detect_language_of_single_message(index_message_tuple):
     index = index_message_tuple[0]
     message = index_message_tuple[1]
     print(f"\rDetecting language: {index}", end='', flush=True)
-    doc1 = nlp(message["text_normalized"])
+    doc1 = nlp(message["text"])
     message["detected_lang"] = doc1._.language["language"]
     message["detected_lang_score"] = doc1._.language["score"]
     return message
