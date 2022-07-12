@@ -54,7 +54,8 @@ def filter_users_by_stop_list(messages):
 
 
 def user_is_not_in_stop_list(message):
-    user_is_in_stop_list = message['from_id'] in ['user168370994', 'user309233391', 'user56326953', 'user397363139']
+    # user_is_in_stop_list = message['from_id'] in ['user168370994', 'user309233391', 'user56326953', 'user397363139'] # bro
+    user_is_in_stop_list = message['from_id'] in ['user399811652', 'user437195022', 'user409446481', 'user336123529', 'user258526776', 'user1841958063'] # bike
     return not user_is_in_stop_list
 
 
