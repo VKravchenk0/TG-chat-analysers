@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 import spacy
 from spacy.language import Language
 from spacy_langdetect import LanguageDetector
+import uuid
+import threading
 
 
 def get_lang_detector(nlp, name):
@@ -35,13 +37,19 @@ def extract_lang_and_date(index_message_tuple):
     return result
 
 
-def read_file_and_set_message_lang(input_file_location):
-    with open(input_file_location) as json_file:
-        count_lang_percentage_and_save_to_file(json_file)
+def async_count_lang_percentage_and_save_to_file(input_file):
+    print("async_count_lang_percentage_and_save_to_file -> start")
+    file_uuid = uuid.uuid1()
+    data = json.load(input_file)
+    print("Before calling thread")
+    t = threading.Thread(target=count_lang_percentage_and_save_to_file, args=(data, file_uuid), kwargs={})
+    t.start()
+    print("After calling thread")
+    return file_uuid
 
 
-def count_lang_percentage_and_save_to_file(json_file, file_uuid):
-    data = json.load(json_file)
+def count_lang_percentage_and_save_to_file(data, file_uuid):
+    print("count_lang_percentage_and_save_to_file -> start")
     print(f"original messages length: {len(data['messages'])}")
     messages = filter_only_text_messages(data)
     messages1 = filter_users_by_stop_list(messages)
@@ -54,6 +62,7 @@ def count_lang_percentage_and_save_to_file(json_file, file_uuid):
     lang_percentage_by_weeks = count_percentages(number_of_messages_by_weeks)
     result = convert_to_result_dto(lang_percentage_by_weeks)
     pickle.dump(result, open(f"resources/{file_uuid}.p", "wb"))
+    print("count_lang_percentage_and_save_to_file -> end")
 
     # вертати uuid на фронт
     # хедер з кількома сторінками

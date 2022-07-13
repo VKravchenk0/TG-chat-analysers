@@ -1,9 +1,8 @@
 import jsonpickle
 from flask import Flask, render_template, request, send_from_directory
 import pickle
-import uuid
 
-from lang_percentage import count_lang_percentage_and_save_to_file
+from lang_percentage import async_count_lang_percentage_and_save_to_file
 
 
 def create_app():
@@ -40,11 +39,10 @@ def create_app():
 
     @app.route('/language/upload', methods=['GET', 'POST'])
     def lang_usage_upload_file():
-        print("uploading files")
+        print("Fie upload start")
         if request.method == 'POST':
-            f = request.files['file']
-            file_uuid = uuid.uuid1()
-            count_lang_percentage_and_save_to_file(f, file_uuid)
+            input_file = request.files['file']
+            file_uuid = async_count_lang_percentage_and_save_to_file(input_file)
             return str(file_uuid)
 
     return app
