@@ -1,7 +1,6 @@
 import json
 import pickle
 import time
-import uuid
 from datetime import datetime, timedelta
 
 import spacy
@@ -41,7 +40,7 @@ def read_file_and_set_message_lang(input_file_location):
         count_lang_percentage_and_save_to_file(json_file)
 
 
-def count_lang_percentage_and_save_to_file(json_file):
+def count_lang_percentage_and_save_to_file(json_file, file_uuid):
     data = json.load(json_file)
     print(f"original messages length: {len(data['messages'])}")
     messages = filter_only_text_messages(data)
@@ -54,14 +53,12 @@ def count_lang_percentage_and_save_to_file(json_file):
     number_of_messages_by_weeks = count_number_of_messages_by_time_period(data)
     lang_percentage_by_weeks = count_percentages(number_of_messages_by_weeks)
     result = convert_to_result_dto(lang_percentage_by_weeks)
-    result_uuid = uuid.uuid1()
-    pickle.dump(result, open(f"resources/{result_uuid}.p", "wb"))
+    pickle.dump(result, open(f"resources/{file_uuid}.p", "wb"))
 
     # вертати uuid на фронт
     # хедер з кількома сторінками
     # переробити штуку з кількістю повідомлень на веб
     # кількість повідомлень на один день перебування в чаті (?)
-    return result_uuid
 
 
 def count_number_of_messages_by_time_period(data):
