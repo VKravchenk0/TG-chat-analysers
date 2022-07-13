@@ -5,6 +5,10 @@ from flask import Flask, render_template, request, send_from_directory, send_fil
 import io
 from flask import Response, redirect
 import pickle
+from werkzeug.utils import secure_filename
+
+from lang_percentage import count_lang_percentage_and_save_to_file
+
 
 def create_app():
     app = Flask(__name__, static_url_path='')
@@ -35,6 +39,18 @@ def create_app():
             mimetype='application/json'
         )
         return response
+
+    @app.route("/language")
+    def lang_usage_page():
+        return render_template('language.html')
+
+    @app.route('/language/upload', methods=['GET', 'POST'])
+    def lang_usage_upload_file():
+        print("uploading files")
+        if request.method == 'POST':
+            f = request.files['file']
+            file_uuid = count_lang_percentage_and_save_to_file(f)
+            return str(file_uuid)
 
     return app
 
