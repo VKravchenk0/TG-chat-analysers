@@ -61,7 +61,7 @@ def count_lang_percentage_and_save_to_file(data, file_uuid):
     number_of_messages_by_weeks = count_number_of_messages_by_time_period(data)
     lang_percentage_by_weeks = count_percentages(number_of_messages_by_weeks)
     result = convert_to_result_dto(lang_percentage_by_weeks)
-    pickle.dump(result, open(f"resources/{file_uuid}.p", "wb"))
+    pickle.dump(result, open(f"resources/lang_percentage_result/{file_uuid}.p", "wb"))
     print("count_lang_percentage_and_save_to_file -> end")
 
     # вертати uuid на фронт

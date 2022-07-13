@@ -1,5 +1,6 @@
+var pathname = window.location.pathname
 $.ajax({
-    url: "/api/data",
+    url: `/api${pathname}`,
     type: "get",
     success: function(result) {
         console.log("Results from BE:")
@@ -34,17 +35,13 @@ $.ajax({
         }
 
         Plotly.newPlot('myDiv', traces, layout);
+    },
+    error: function (xhr, ajaxOptions, thrownError) {
+        if (xhr.status==404) {
+            $('#file_not_found').text("Файл ще в обробці. Спробуйте, будь-ласка, пізніше.");
+            $('#file_not_found').show()
+        }
     }
-  });
-
-/*var plotDiv = document.getElementById('plot');
-
-var traces = [
-	{x: ["2022-06-27", "2022-07-04", "2022-07-11"], y: [20, 40, 50], stackgroup: 'one'},
-	{x: ["2022-06-27", "2022-07-04", "2022-07-11"], y: [80, 60, 50], stackgroup: 'one'}
-];
-
-Plotly.newPlot('myDiv', traces, {title: 'stacked and filled line chart'});
-*/
+});
 
 
