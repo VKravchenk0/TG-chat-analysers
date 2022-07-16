@@ -4,7 +4,8 @@ from os.path import exists
 
 from settings import LANG_PERCENTAGE_RESULT_FOLDER
 from src.utils.file_name_utils import validate_and_return_input_file_name, get_language_percentage_result_abs_file_name
-from src.data_processors.lang_percentage_counter import async_start_job, count_lang_percentage_and_save_to_file
+from src.data_processors.lang_percentage_counter import count_lang_percentage_and_save_to_file
+from src.utils.async_utils import async_start_job
 import pickle
 import jsonpickle
 
