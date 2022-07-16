@@ -37,15 +37,18 @@ def extract_lang_and_date(index_message_tuple):
     return result
 
 
-def async_count_lang_percentage_and_save_to_file(input_file, user_stop_list):
-    print("async_count_lang_percentage_and_save_to_file -> start")
-    file_uuid = uuid.uuid1()
+def async_count_lang_percentage_and_save_to_file(input_file, user_stop_list, file_name_without_extension):
+    print(f"async_count_lang_percentage_and_save_to_file -> start. File name: {file_name_without_extension}. "
+          f"User stop list: {user_stop_list}")
+    if not file_name_without_extension:
+        file_name_without_extension = str(uuid.uuid1())
+
     data = json.load(input_file)
     print("Before calling thread")
-    t = threading.Thread(target=count_lang_percentage_and_save_to_file, args=(data, file_uuid, user_stop_list), kwargs={})
+    t = threading.Thread(target=count_lang_percentage_and_save_to_file, args=(data, file_name_without_extension, user_stop_list), kwargs={})
     t.start()
     print("After calling thread")
-    return file_uuid
+    return file_name_without_extension
 
 
 def count_lang_percentage_and_save_to_file(data, file_uuid, user_stop_list):

@@ -4,12 +4,14 @@ $(document).ready(function(){
         var fd = new FormData();
         var files = $('#file')[0].files;
         var user_stop_list = $('#user_stop_list').val().trim();
+        var result_file_name = $('#result_file_name').val().trim();
         console.log("Stop list:");
         console.log(user_stop_list);
         // Check file selected or not
         if (files.length > 0) {
            fd.append('file', files[0]);
            fd.append('user_stop_list', user_stop_list);
+           fd.append('result_file_name', result_file_name);
 
            $.ajax({
               url: '/api/language/upload',

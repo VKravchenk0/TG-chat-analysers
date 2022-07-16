@@ -1,9 +1,10 @@
 import jsonpickle
 from flask import Flask, render_template, request, send_from_directory
 import pickle
-from os.path import exists
 from werkzeug.utils import redirect
+from os.path import exists
 
+from file_name_utils import validate_and_return_input_file_name
 from lang_percentage_counter import async_count_lang_percentage_and_save_to_file
 
 
@@ -32,13 +33,19 @@ def create_app():
     @app.route('/api/language/upload', methods=['POST'])
     def lang_usage_upload_file():
         print("Fie upload start")
-        if request.method == 'POST':
-            input_file = request.files['file']
-            user_stop_list = [x.strip() for x in request.form['user_stop_list'].split(',')]
-            print("Stop list:")
-            print(user_stop_list)
-            file_uuid = async_count_lang_percentage_and_save_to_file(input_file, user_stop_list)
-            return str(file_uuid)
+        input_file = request.files['file']
+        user_stop_list = [x.strip() for x in request.form['user_stop_list'].split(',')]
+        print(f"Stop list: {user_stop_list}")
+
+        raw_input_result_file_name = request.form['result_file_name']
+        print(f"Raw result file name: {raw_input_result_file_name}")
+
+        sanitized_input_result_file_name = validate_and_return_input_file_name(raw_input_result_file_name)
+        print(f"Sanitized result file name: {sanitized_input_result_file_name}")
+
+        result_file_name = async_count_lang_percentage_and_save_to_file(
+            input_file, user_stop_list, file_name_without_extension=sanitized_input_result_file_name)
+        return result_file_name
 
     @app.route("/language/<file_uuid>", methods=['GET'])
     def get_language_render_page(file_uuid):
