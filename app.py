@@ -34,7 +34,10 @@ def create_app():
         print("Fie upload start")
         if request.method == 'POST':
             input_file = request.files['file']
-            file_uuid = async_count_lang_percentage_and_save_to_file(input_file)
+            user_stop_list = [x.strip() for x in request.form['user_stop_list'].split(',')]
+            print("Stop list:")
+            print(user_stop_list)
+            file_uuid = async_count_lang_percentage_and_save_to_file(input_file, user_stop_list)
             return str(file_uuid)
 
     @app.route("/language/<file_uuid>", methods=['GET'])

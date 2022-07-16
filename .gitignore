@@ -9,6 +9,7 @@
 /resources/lang_percentage_result
 /resources/result.json
 /resources/result_test.json
+stop_lists
 
 # User-specific stuff
 .idea/**/workspace.xml

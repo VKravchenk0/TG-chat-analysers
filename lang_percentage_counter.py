@@ -37,22 +37,22 @@ def extract_lang_and_date(index_message_tuple):
     return result
 
 
-def async_count_lang_percentage_and_save_to_file(input_file):
+def async_count_lang_percentage_and_save_to_file(input_file, user_stop_list):
     print("async_count_lang_percentage_and_save_to_file -> start")
     file_uuid = uuid.uuid1()
     data = json.load(input_file)
     print("Before calling thread")
-    t = threading.Thread(target=count_lang_percentage_and_save_to_file, args=(data, file_uuid), kwargs={})
+    t = threading.Thread(target=count_lang_percentage_and_save_to_file, args=(data, file_uuid, user_stop_list), kwargs={})
     t.start()
     print("After calling thread")
     return file_uuid
 
 
-def count_lang_percentage_and_save_to_file(data, file_uuid):
+def count_lang_percentage_and_save_to_file(data, file_uuid, user_stop_list):
     print("count_lang_percentage_and_save_to_file -> start")
     print(f"original messages length: {len(data['messages'])}")
     messages = filter_only_text_messages(data)
-    messages1 = filter_users_by_stop_list(messages)
+    messages1 = filter_users_by_stop_list(messages, user_stop_list)
     messages = remove_formatting(messages1)
     messages = squash_sequential_message_from_same_person(messages)
     messages = detect_language(messages)
@@ -125,16 +125,16 @@ def is_text_message(message):
         return False
     return True
 
-
-def filter_users_by_stop_list(messages):
-    messages = list(filter(user_is_not_in_stop_list, messages))
+def filter_users_by_stop_list(messages, user_stop_list):
+    messages = list(filter(lambda m: user_is_not_in_stop_list(m, user_stop_list), messages))
     print(f"Removed users from stop list. Messages left: {len(messages)}")
     return messages
 
 
-def user_is_not_in_stop_list(message):
+def user_is_not_in_stop_list(message, user_stop_list):
     # user_is_in_stop_list = message['from_id'] in ['user168370994', 'user309233391', 'user56326953', 'user397363139'] # bro
-    user_is_in_stop_list = message['from_id'] in ['user399811652', 'user437195022', 'user409446481', 'user336123529', 'user258526776', 'user1841958063'] # bike
+    user_is_in_stop_list = message['from_id'] in user_stop_list # bro
+    # user_is_in_stop_list = message['from_id'] in ['user399811652', 'user437195022', 'user409446481', 'user336123529', 'user258526776', 'user1841958063'] # bike
     return not user_is_in_stop_list
 
 
