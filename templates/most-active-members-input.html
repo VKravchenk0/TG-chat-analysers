@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Language usage count</title>
+    <title>Most active members count</title>
     <link rel="stylesheet" href="/css/style.css">
     <script src="/js/lib/jquery-3.6.0.min.js"></script>
     <script src='https://cdn.plot.ly/plotly-2.12.1.min.js'></script>
@@ -12,10 +12,6 @@
     <div class="container">
         <form method="post" action="" enctype="multipart/form-data" id="upload_form">
             <div>
-                <label for="user_stop_list">id користувачів для ігнорування (через кому):</label>
-                <input type="text" id="user_stop_list" name="user-stop-list" />
-                <br/>
-                <br/>
                 <label for="result_file_name">Ім'я файлу з результатами (опціонально):</label>
                 <input type="text" id="result_file_name" name="result-file-name" />
                 <br/>
@@ -27,6 +23,6 @@
         <div id="upload_result" style="display: none"></div>
     </div>
 
-    <script src="/js/language-input.js"></script>
+    <script src="/js/most-active-members-input.js"></script>
 </body>
 </html>

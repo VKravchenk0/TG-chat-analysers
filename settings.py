@@ -1,2 +1,3 @@
 RESOURCES_FOLDER = 'resources'
 LANG_PERCENTAGE_RESULT_FOLDER = f"{RESOURCES_FOLDER}/lang_percentage_result"
+MOST_ACTIVE_MEMBERS_RESULT_FOLDER = f"{RESOURCES_FOLDER}/most_active_members_result"

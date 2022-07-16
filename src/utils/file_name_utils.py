@@ -1,26 +1,38 @@
 import glob
 import re
+import uuid
+
 from pathvalidate import sanitize_filename
-from settings import LANG_PERCENTAGE_RESULT_FOLDER
+from settings import LANG_PERCENTAGE_RESULT_FOLDER, MOST_ACTIVE_MEMBERS_RESULT_FOLDER
 
 
 def get_language_percentage_result_abs_file_name(file_name):
     return f"{LANG_PERCENTAGE_RESULT_FOLDER}/{file_name}.p"
 
 
-def validate_and_return_input_file_name(raw_input_result_file_name):
+def get_most_active_members_result_abs_file_name(file_name):
+    return f"{MOST_ACTIVE_MEMBERS_RESULT_FOLDER}/{file_name}.p"
+
+
+def validate_and_return_input_file_name(result_folder, raw_input_result_file_name):
+    result_file_name_without_extension = get_file_name_based_on_user_input(raw_input_result_file_name, result_folder)
+    if not result_file_name_without_extension:
+        # create random file name
+        return str(uuid.uuid1())
+    return result_file_name_without_extension
+
+
+def get_file_name_based_on_user_input(raw_input_result_file_name, result_folder):
     print(f"validate_and_return_input_file_name start. File name: {raw_input_result_file_name}")
     if not raw_input_result_file_name:
         return raw_input_result_file_name
-
     sanitized_user_input = sanitize_filename(raw_input_result_file_name).strip()
-    files_with_same_name = glob.glob(f"{LANG_PERCENTAGE_RESULT_FOLDER}/{sanitized_user_input}*.p")
+    files_with_same_name = glob.glob(f"{result_folder}/{sanitized_user_input}*.p")
     print(f"Files with same name: {files_with_same_name}")
     if not files_with_same_name:
         # returning sanitized user input
         print("No files found. Returning sanitized user input")
         return sanitized_user_input
-
     return get_next_file_name(files_with_same_name, sanitized_user_input)
 
 

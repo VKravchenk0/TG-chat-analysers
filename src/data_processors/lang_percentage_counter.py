@@ -1,4 +1,3 @@
-import json
 import pickle
 import time
 from datetime import datetime, timedelta
@@ -8,6 +7,8 @@ from spacy.language import Language
 from spacy_langdetect import LanguageDetector
 import uuid
 import threading
+
+from src.utils.file_name_utils import get_language_percentage_result_abs_file_name
 
 
 def get_lang_detector(nlp, name):
@@ -37,21 +38,17 @@ def extract_lang_and_date(index_message_tuple):
     return result
 
 
-def async_count_lang_percentage_and_save_to_file(input_file, user_stop_list, file_name_without_extension):
-    print(f"async_count_lang_percentage_and_save_to_file -> start. File name: {file_name_without_extension}. "
-          f"User stop list: {user_stop_list}")
-    if not file_name_without_extension:
-        file_name_without_extension = str(uuid.uuid1())
+def async_start_job(target, args):
+    print(f"async_count_lang_percentage_and_save_to_file -> start. Target: {target}. "
+          f"Args: {args}")
 
-    data = json.load(input_file)
     print("Before calling thread")
-    t = threading.Thread(target=count_lang_percentage_and_save_to_file, args=(data, file_name_without_extension, user_stop_list), kwargs={})
+    t = threading.Thread(target=target, args=args, kwargs={})
     t.start()
     print("After calling thread")
-    return file_name_without_extension
 
 
-def count_lang_percentage_and_save_to_file(data, file_uuid, user_stop_list):
+def count_lang_percentage_and_save_to_file(data, file_name, user_stop_list):
     print("count_lang_percentage_and_save_to_file -> start")
     print(f"original messages length: {len(data['messages'])}")
     messages = filter_only_text_messages(data)
@@ -64,13 +61,8 @@ def count_lang_percentage_and_save_to_file(data, file_uuid, user_stop_list):
     number_of_messages_by_weeks = count_number_of_messages_by_time_period(data)
     lang_percentage_by_weeks = count_percentages(number_of_messages_by_weeks)
     result = convert_to_result_dto(lang_percentage_by_weeks)
-    pickle.dump(result, open(f"resources/lang_percentage_result/{file_uuid}.p", "wb"))
+    pickle.dump(result, open(get_language_percentage_result_abs_file_name(file_name), "wb"))
     print("count_lang_percentage_and_save_to_file -> end")
-
-    # вертати uuid на фронт
-    # хедер з кількома сторінками
-    # переробити штуку з кількістю повідомлень на веб
-    # кількість повідомлень на один день перебування в чаті (?)
 
 
 def count_number_of_messages_by_time_period(data):
