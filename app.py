@@ -4,8 +4,8 @@ import pickle
 from werkzeug.utils import redirect
 from os.path import exists
 
-from file_name_utils import validate_and_return_input_file_name, get_language_percentage_result_abs_file_name
-from lang_percentage_counter import async_count_lang_percentage_and_save_to_file
+from src.utils.file_name_utils import validate_and_return_input_file_name, get_language_percentage_result_abs_file_name
+from src.lang.lang_percentage_counter import async_count_lang_percentage_and_save_to_file
 
 
 def create_app():
