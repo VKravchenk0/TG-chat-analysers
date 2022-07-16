@@ -1,0 +1,2 @@
+RESOURCES_FOLDER = 'resources'
+LANG_PERCENTAGE_RESULT_FOLDER = f"{RESOURCES_FOLDER}/lang_percentage_result"

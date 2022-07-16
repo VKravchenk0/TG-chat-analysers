@@ -4,7 +4,7 @@ import pickle
 from werkzeug.utils import redirect
 from os.path import exists
 
-from file_name_utils import validate_and_return_input_file_name
+from file_name_utils import validate_and_return_input_file_name, get_language_percentage_result_abs_file_name
 from lang_percentage_counter import async_count_lang_percentage_and_save_to_file
 
 
@@ -54,7 +54,7 @@ def create_app():
     @app.route("/api/language/<file_uuid>", methods=['GET'])
     def get_language_data(file_uuid):
         print(f"Get data from file uuid: {file_uuid}")
-        file_path = f"resources/lang_percentage_result/{file_uuid}.p"
+        file_path = get_language_percentage_result_abs_file_name(file_uuid)
         file_exists = exists(file_path)
 
         if not file_exists:
