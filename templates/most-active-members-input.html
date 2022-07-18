@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Most active members count</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <script src="/js/lib/jquery-3.6.0.min.js"></script>
-    <script src='https://cdn.plot.ly/plotly-2.12.1.min.js'></script>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block title %}Most active members count{% endblock %}
 
+{% block content %}
     <div class="container">
         <form method="post" action="" enctype="multipart/form-data" id="upload_form">
             <div>
@@ -22,7 +15,8 @@
         </form>
         <div id="upload_result" style="display: none"></div>
     </div>
+{% endblock %}
 
+{% block custom_scripts %}
     <script src="/js/most-active-members-input.js"></script>
-</body>
-</html>
+{% endblock %}

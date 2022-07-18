@@ -1,18 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Most active members result</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <script src="/js/lib/jquery-3.6.0.min.js"></script>
-    <script src='https://cdn.plot.ly/plotly-2.12.1.min.js'></script>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block title %}Most active members result{% endblock %}
 
+{% block content %}
     <div id='myDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
     <div id="file_not_found" style="display: none"></div>
+{% endblock %}
 
-
+{% block custom_scripts %}
     <script src="/js/most-active-members-result.js"></script>
-</body>
-</html>
+{% endblock %}
