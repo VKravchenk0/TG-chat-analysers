@@ -1,0 +1,5 @@
+header .navigation li.active a {
+    cursor: default;
+    color: black;
+    text-decoration: none;
+}
