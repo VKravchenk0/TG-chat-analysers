@@ -23,6 +23,10 @@ def upload_file():
     print("Fie upload start")
     input_file = request.files['file']
 
+    processing_params = json.loads(request.form['processing_params'])
+    print("Processing params: ")
+    print(processing_params)
+
     raw_input_result_file_name = request.form['result_file_name']
     print(f"Raw result file name: {raw_input_result_file_name}")
 
@@ -31,7 +35,7 @@ def upload_file():
     print(f"Sanitized result file name: {sanitized_input_result_file_name}")
 
     data = json.load(input_file)
-    async_start_job(count_members_activity_and_save_to_file, (data, sanitized_input_result_file_name))
+    async_start_job(count_members_activity_and_save_to_file, (data, sanitized_input_result_file_name, processing_params))
     return sanitized_input_result_file_name
 
 

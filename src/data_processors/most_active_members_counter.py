@@ -3,8 +3,6 @@ import pickle
 from src.utils.file_name_utils import get_most_active_members_result_abs_file_name
 from src.utils.text_utils import remove_formatting, squash_sequential_message_from_same_person
 
-MEMBERS_NUMBER = 35
-
 
 def build_username_messages_count_dictionary(data):
     """
@@ -28,12 +26,12 @@ def build_username_messages_count_dictionary(data):
     return result_dict
 
 
-def trim_members(input):
+def trim_bottom_members(input, top_members_to_display):
     """
-    Returns the last MEMBERS_NUMBER records from the input dictionary
+    Returns the last top_members_to_display records from the input dictionary
     """
     input_length = len(input)
-    last_n_results = list(input.items())[input_length - MEMBERS_NUMBER: input_length]
+    last_n_results = list(input.items())[input_length - top_members_to_display: input_length]
     result = {}
     for item in last_n_results:
         result[item[0]] = item[1]
@@ -65,7 +63,7 @@ def is_relevant_message(message):
     return True
 
 
-def count_members_activity_and_save_to_file(data, file_name):
+def count_members_activity_and_save_to_file(data, file_name, processing_params):
     print("count_activity_and_save_to_file -> start")
     print(f"original messages length: {len(data['messages'])}")
     messages = filter_only_text_messages(data)
@@ -75,7 +73,7 @@ def count_members_activity_and_save_to_file(data, file_name):
 
     all_members_dict = build_username_messages_count_dictionary(data)
 
-    sorted_dict = sort_dictionary_by_messages_count(all_members_dict)
+    result_dict = sort_dictionary_by_messages_count(all_members_dict)
 
     # df1 = pd.DataFrame(all_members_dict)
     # df2 = pd.DataFrame(sorted_dict)
@@ -86,12 +84,17 @@ def count_members_activity_and_save_to_file(data, file_name):
     # df2 = pd.DataFrame(sorted_dict.items())
     # d2 = df2[1].describe()
 
-    # TODO: do we need that?
-    sorted_trimmed_dict = trim_members(sorted_dict)
+    print(f"Before trim step: {result_dict}")
+
+    if processing_params.get('number_of_members_to_display') \
+            and isinstance(processing_params.get('number_of_members_to_display'), int):
+        result_dict = trim_bottom_members(result_dict, processing_params.get('number_of_members_to_display'))
+
+    print(f"After trim step: {result_dict}")
 
     result_as_lists = {
-        'members': list(sorted_trimmed_dict.keys()),
-        'number_of_messages': list(sorted_trimmed_dict.values())
+        'members': list(result_dict.keys()),
+        'number_of_messages': list(result_dict.values())
     }
     print(f"result as list: {result_as_lists}")
     pickle.dump(result_as_lists, open(get_most_active_members_result_abs_file_name(file_name), "wb"))

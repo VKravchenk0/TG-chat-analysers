@@ -4,10 +4,16 @@ $(document).ready(function(){
         var fd = new FormData();
         var files = $('#file')[0].files;
         var result_file_name = $('#result_file_name').val().trim();
+        var number_of_members_to_display = $('#number_of_members_to_display').val().trim();
+        var min_message_threshold = $('#min_message_threshold').val().trim();
         // Check file selected or not
         if (files.length > 0) {
            fd.append('file', files[0]);
            fd.append('result_file_name', result_file_name);
+           fd.append('processing_params', JSON.stringify({
+             'number_of_members_to_display': parseInt(number_of_members_to_display),
+             'min_message_threshold': parseInt(min_message_threshold)
+           }));
 
            $.ajax({
               url: '/api/most-active-members/upload',
