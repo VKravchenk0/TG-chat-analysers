@@ -11,6 +11,16 @@
 </head>
 <body>
 
+    <header>
+        <!-- TODO: check for improvements - https://stackoverflow.com/questions/18600031/changing-the-active-class-of-a-link-with-the-twitter-bootstrap-css-in-python-fla-->
+        <div>
+            <a href = "{{ url_for('most_active_members_count.input_page') }}">Найбільш активні члени</a>
+        </div>
+        <div>
+            <a href = "{{ url_for('language_count.input_page') }}">Використання мови</a>
+        </div>
+    </header>
+
     {% block content %}{% endblock %}
 
     {% block custom_scripts %}{% endblock %}

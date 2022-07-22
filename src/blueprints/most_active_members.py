@@ -14,12 +14,12 @@ most_active_members_count_bp = Blueprint('most_active_members_count', __name__, 
 
 
 @most_active_members_count_bp.route("/most-active-members")
-def lang_usage_page():
+def input_page():
     return render_template('most-active-members-input.html')
 
 
 @most_active_members_count_bp.route('/api/most-active-members/upload', methods=['POST'])
-def lang_usage_upload_file():
+def upload_file():
     print("Fie upload start")
     input_file = request.files['file']
 
@@ -36,12 +36,12 @@ def lang_usage_upload_file():
 
 
 @most_active_members_count_bp.route("/most-active-members/<file_name>", methods=['GET'])
-def get_language_render_page(file_name):
+def result_page(file_name):
     return render_template('most-active-members-result.html')
 
 
 @most_active_members_count_bp.route("/api/most-active-members/<file_name>", methods=['GET'])
-def get_language_data(file_name):
+def result_data(file_name):
     print(f"Get data from file uuid: {file_name}")
     file_path = get_most_active_members_result_abs_file_name(file_name)
     file_exists = exists(file_path)

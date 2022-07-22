@@ -14,12 +14,12 @@ language_count_bp = Blueprint('language_count', __name__,
 
 
 @language_count_bp.route("/language")
-def lang_usage_page():
+def input_page():
     return render_template('language-input.html')
 
 
 @language_count_bp.route('/api/language/upload', methods=['POST'])
-def lang_usage_upload_file():
+def upload_file():
     print("Fie upload start")
     input_file = request.files['file']
     user_stop_list = [x.strip() for x in request.form['user_stop_list'].split(',')]
@@ -38,12 +38,12 @@ def lang_usage_upload_file():
 
 
 @language_count_bp.route("/language/<file_name>", methods=['GET'])
-def get_language_render_page(file_name):
+def result_page(file_name):
     return render_template('language-result.html')
 
 
 @language_count_bp.route("/api/language/<file_name>", methods=['GET'])
-def get_language_data(file_name):
+def result_data(file_name):
     print(f"Get data from file uuid: {file_name}")
     file_path = get_language_percentage_result_abs_file_name(file_name)
     file_exists = exists(file_path)
