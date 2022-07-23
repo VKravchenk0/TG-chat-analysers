@@ -86,16 +86,11 @@ def count_members_activity_and_save_to_file(data, file_name, processing_params):
 
     print(f"Before threshold trim step: {result_dict}")
 
-    if processing_params.get('min_message_threshold') \
-            and isinstance(processing_params.get('min_message_threshold'), int):
-        threshold = processing_params.get('min_message_threshold')
-        result_dict = {k: v for k, v in result_dict.items() if v >= threshold}
+    result_dict = trim_members_by_message_number_threshold_if_needed(processing_params, result_dict)
 
     print(f"Before members number trim step: {result_dict}")
 
-    if processing_params.get('number_of_members_to_display') \
-            and isinstance(processing_params.get('number_of_members_to_display'), int):
-        result_dict = trim_bottom_members(result_dict, processing_params.get('number_of_members_to_display'))
+    result_dict = trim_members_if_needed(processing_params, result_dict)
 
     print(f"After members number trim step: {result_dict}")
 
@@ -106,3 +101,18 @@ def count_members_activity_and_save_to_file(data, file_name, processing_params):
     print(f"result as list: {result_as_lists}")
     pickle.dump(result_as_lists, open(get_most_active_members_result_abs_file_name(file_name), "wb"))
     print("count_lang_percentage_and_save_to_file -> end")
+
+
+def trim_members_if_needed(processing_params, result_dict):
+    if processing_params.get('number_of_members_to_display') \
+            and isinstance(processing_params.get('number_of_members_to_display'), int):
+        result_dict = trim_bottom_members(result_dict, processing_params.get('number_of_members_to_display'))
+    return result_dict
+
+
+def trim_members_by_message_number_threshold_if_needed(processing_params, result_dict):
+    if processing_params.get('min_message_threshold') \
+            and isinstance(processing_params.get('min_message_threshold'), int):
+        threshold = processing_params.get('min_message_threshold')
+        result_dict = {k: v for k, v in result_dict.items() if v >= threshold}
+    return result_dict
