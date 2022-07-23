@@ -84,13 +84,20 @@ def count_members_activity_and_save_to_file(data, file_name, processing_params):
     # df2 = pd.DataFrame(sorted_dict.items())
     # d2 = df2[1].describe()
 
-    print(f"Before trim step: {result_dict}")
+    print(f"Before threshold trim step: {result_dict}")
+
+    if processing_params.get('min_message_threshold') \
+            and isinstance(processing_params.get('min_message_threshold'), int):
+        threshold = processing_params.get('min_message_threshold')
+        result_dict = {k: v for k, v in result_dict.items() if v >= threshold}
+
+    print(f"Before members number trim step: {result_dict}")
 
     if processing_params.get('number_of_members_to_display') \
             and isinstance(processing_params.get('number_of_members_to_display'), int):
         result_dict = trim_bottom_members(result_dict, processing_params.get('number_of_members_to_display'))
 
-    print(f"After trim step: {result_dict}")
+    print(f"After members number trim step: {result_dict}")
 
     result_as_lists = {
         'members': list(result_dict.keys()),
