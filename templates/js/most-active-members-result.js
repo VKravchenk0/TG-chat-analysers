@@ -9,7 +9,12 @@ $.ajax({
           {
             x: result.members,
             y: result.number_of_messages,
-            type: 'bar'
+            type: 'bar',
+            text: result.number_of_messages.map(String),
+            textposition: 'outside',
+            marker: {
+                color: 'cyan'
+            }
           }
         ];
 
