@@ -13,7 +13,13 @@ $.ajax({
           }
         ];
 
-        Plotly.newPlot('myDiv', data);
+        var layout = {
+//          autosize: false,
+//          width: 1500,
+//          height: 1000
+        }
+
+        Plotly.newPlot('myDiv', data, layout);
     },
     error: function (xhr, ajaxOptions, thrownError) {
         if (xhr.status==404) {
