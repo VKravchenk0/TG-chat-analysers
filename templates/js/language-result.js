@@ -11,15 +11,21 @@ $.ajax({
                 x: result.week_start,
                 y: result.uk_percentage,
                 stackgroup: 'one',
-                name: 'Українська'
-
+                name: 'Українська',
+                line: {
+//                    width: 0,
+                    color: '#0057B8'
+                }
             },
             {
                 x: result.week_start,
                 y: result.ru_percentage,
                 stackgroup: 'one',
                 name: 'Російська',
-                mode: 'none'
+                line: {
+                    width: 0,
+                    color: '#DA291C'
+                }
             }
         ];
 
