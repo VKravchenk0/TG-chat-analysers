@@ -1,6 +1,6 @@
 import pickle
 import time
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 import spacy
 from spacy.language import Language
@@ -26,7 +26,7 @@ def percentage(part, whole):
 def extract_lang_and_date(index_message_tuple):
     index = index_message_tuple[0]
     message = index_message_tuple[1]
-    dt = message["thread_start_date"] # to understand thread_start_date - see squash_sequential_message_from_same_person function
+    dt = datetime.fromisoformat(message["date"])
     week_start = dt - timedelta(days=dt.weekday())
     result = {
         'lang': message["detected_lang"],
@@ -38,24 +38,64 @@ def extract_lang_and_date(index_message_tuple):
 
 
 def count_lang_percentage_and_save_to_file(data, file_name, user_stop_list):
-    print("count_lang_percentage_and_save_to_file -> start")
-    print(f"original messages length: {len(data['messages'])}")
-    messages = filter_only_text_messages(data)
-    messages1 = filter_users_by_stop_list(messages, user_stop_list)
-    messages = remove_formatting(messages1)
-    messages = squash_sequential_message_from_same_person(messages)
-    messages = detect_language(messages)
-    messages = remove_messages_in_irrelevant_languages(messages)
-    data["messages"] = messages
-    number_of_messages_by_weeks = count_number_of_messages_by_time_period(data)
-    lang_percentage_by_weeks = count_percentages(number_of_messages_by_weeks)
-    result = convert_to_result_dto(lang_percentage_by_weeks)
+    result = count_lang_percentage(data, user_stop_list)
     pickle.dump(result, open(get_language_percentage_result_abs_file_name(file_name), "wb"))
     print("count_lang_percentage_and_save_to_file -> end")
 
 
-def count_number_of_messages_by_time_period(data):
-    minimized_messages = list(map(extract_lang_and_date, enumerate(data["messages"])))
+def count_lang_percentage(data, user_stop_list=[]):
+    print("count_lang_percentage_and_save_to_file -> start")
+    print(f"original messages length: {len(data['messages'])}")
+    messages = clean_data(data, user_stop_list)
+    messages = detect_language(messages)
+    messages = remove_messages_in_irrelevant_languages(messages)
+    result = count_language_percentages(messages)
+    return result
+
+
+def count_language_percentages(messages):
+    number_of_messages_by_weeks = count_number_of_messages_by_time_period(messages)
+    lang_percentage_by_weeks = count_percentages(number_of_messages_by_weeks)
+    result = convert_to_result_dto(lang_percentage_by_weeks)
+    return result
+
+
+def clean_data(data, user_stop_list):
+    messages = filter_only_text_messages(data)
+    messages = filter_users_by_stop_list(messages, user_stop_list)
+    messages = remove_formatting(messages)
+    return messages
+
+
+def filter_only_text_messages(data):
+    messages = list(filter(is_text_message, data["messages"]))
+    print(f"Filtered only text messages. Messages length: {len(messages)}")
+    return messages
+
+
+def is_text_message(message):
+    if "type" not in message or message["type"] is None or message["type"] != "message":
+        return False
+    if "forwarded_from" in message:
+        return False
+    if "text" not in message or message["text"] is None or (
+            isinstance(message["text"], str) and message["text"].strip() == ""):
+        return False
+    return True
+
+def filter_users_by_stop_list(messages, user_stop_list):
+    messages = list(filter(lambda m: user_is_not_in_stop_list(m, user_stop_list), messages))
+    print(f"Removed users from stop list. Messages left: {len(messages)}")
+    return messages
+
+
+def user_is_not_in_stop_list(message, user_stop_list):
+    user_is_in_stop_list = message['from_id'] in user_stop_list
+    return not user_is_in_stop_list
+
+
+def count_number_of_messages_by_time_period(messages):
+    minimized_messages = list(map(extract_lang_and_date, enumerate(messages)))
     number_of_messages_by_weeks = {}
     for m in minimized_messages:
         if m['beginning_of_week_str'] not in number_of_messages_by_weeks:
@@ -91,36 +131,6 @@ def convert_to_result_dto(messages_percentage):
         result['uk_percentage'].append(language_percentages['uk'])
         result['ru_percentage'].append(language_percentages['ru'])
     return result
-
-
-def filter_only_text_messages(data):
-    messages = list(filter(is_text_message, data["messages"]))
-    print(f"Filtered only text messages. Messages length: {len(messages)}")
-    return messages
-
-
-def is_text_message(message):
-    if "type" not in message or message["type"] is None or message["type"] != "message":
-        return False
-    if "forwarded_from" in message:
-        return False
-    if "text" not in message or message["text"] is None or (
-            isinstance(message["text"], str) and message["text"].strip() == ""):
-        return False
-    return True
-
-def filter_users_by_stop_list(messages, user_stop_list):
-    messages = list(filter(lambda m: user_is_not_in_stop_list(m, user_stop_list), messages))
-    print(f"Removed users from stop list. Messages left: {len(messages)}")
-    return messages
-
-
-def user_is_not_in_stop_list(message, user_stop_list):
-    user_is_in_stop_list = message['from_id'] in user_stop_list
-    return not user_is_in_stop_list
-
-
-
 
 
 def detect_language(mapped_messages):
