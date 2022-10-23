@@ -5,7 +5,7 @@ import spacy
 from spacy.language import Language
 from spacy_langdetect import LanguageDetector
 
-from src.data_processors.counters import DefaultLanguagePercentageCounter
+from src.data_processors.counters import SimpleLanguagePercentageCounter, WeightedLanguagePercentageCounter, LanguagePercentageCounterType
 from src.utils.file_name_utils import get_language_percentage_result_abs_file_name
 from src.utils.text_utils import remove_formatting
 
@@ -19,31 +19,29 @@ Language.factory("language_detector", func=get_lang_detector)
 nlp.add_pipe('language_detector', last=True)
 
 
-def count_lang_percentage_and_save_to_file(data, file_name, user_stop_list):
-    result = count_lang_percentage(data, user_stop_list)
+def count_lang_percentage_and_save_to_file(data, file_name, user_stop_list, counter_type):
+    result = count_lang_percentage(data, counter_type, user_stop_list)
     pickle.dump(result, open(get_language_percentage_result_abs_file_name(file_name), "wb"))
     print("count_lang_percentage_and_save_to_file -> end")
 
 
-def count_lang_percentage(data, user_stop_list=[]):
+def count_lang_percentage(data, counter_type, user_stop_list=[]):
     print("count_lang_percentage_and_save_to_file -> start")
     print(f"original messages length: {len(data['messages'])}")
     messages = clean_data(data, user_stop_list)
     messages = detect_language(messages)
     messages = remove_messages_in_irrelevant_languages(messages)
-    result = count_language_percentages(messages)
+    result = count_language_percentages(messages, counter_type)
     return result
 
 
-def count_language_percentages(messages):
-    use_weighted_counter = False
-    if use_weighted_counter:
-        # split messages by weeks
-        # in each week
-        return {}
+def count_language_percentages(messages, counter_type: LanguagePercentageCounterType):
+    if counter_type == LanguagePercentageCounterType.WEIGHTED:
+        return WeightedLanguagePercentageCounter().count_language_percentages(messages)
+    elif counter_type == LanguagePercentageCounterType.SIMPLE:
+        return SimpleLanguagePercentageCounter().count_language_percentages(messages)
     else:
-        return DefaultLanguagePercentageCounter().count_language_percentages(messages)
-
+        raise NotImplementedError(f"Processing not implemented for counter type: {counter_type}")
 
 def clean_data(data, user_stop_list):
     messages = filter_only_text_messages(data)

@@ -5,6 +5,7 @@ from os.path import exists
 from settings import LANG_PERCENTAGE_RESULT_FOLDER
 from src.utils.file_name_utils import validate_and_return_input_file_name, get_language_percentage_result_abs_file_name
 from src.data_processors.lang_percentage_counter import count_lang_percentage_and_save_to_file
+from src.data_processors.counters import LanguagePercentageCounterType
 from src.utils.async_utils import async_start_job
 import pickle
 import jsonpickle
@@ -25,15 +26,24 @@ def upload_file():
     user_stop_list = [x.strip() for x in request.form['user_stop_list'].split(',')]
     print(f"Stop list: {user_stop_list}")
 
+    counter_type = LanguagePercentageCounterType.WEIGHTED
+    if 'counter_type' in request.args:
+        request_counter_type = request.args.get('counter_type')
+        print(f'counter_type is present in request: {request_counter_type}')
+        counter_type = LanguagePercentageCounterType[request_counter_type]
+    print(f"selected counter type: {counter_type}")
+
     raw_input_result_file_name = request.form['result_file_name']
     print(f"Raw result file name: {raw_input_result_file_name}")
 
     sanitized_input_result_file_name = validate_and_return_input_file_name(LANG_PERCENTAGE_RESULT_FOLDER,
-                                                                           raw_input_result_file_name)
+                                                                           raw_input_result_file_name, counter_type)
     print(f"Sanitized result file name: {sanitized_input_result_file_name}")
 
     data = json.load(input_file)
-    async_start_job(count_lang_percentage_and_save_to_file, (data, sanitized_input_result_file_name, user_stop_list))
+    async_start_job(count_lang_percentage_and_save_to_file,
+                    (data, sanitized_input_result_file_name, user_stop_list, counter_type)
+                    )
     return sanitized_input_result_file_name
 
 
