@@ -27,8 +27,8 @@ def upload_file():
     print(f"Stop list: {user_stop_list}")
 
     counter_type = LanguagePercentageCounterType.WEIGHTED
-    if 'counter_type' in request.args:
-        request_counter_type = request.args.get('counter_type')
+    if 'counter_type' in request.form:
+        request_counter_type = request.form.get('counter_type')
         print(f'counter_type is present in request: {request_counter_type}')
         counter_type = LanguagePercentageCounterType[request_counter_type]
     print(f"selected counter type: {counter_type}")

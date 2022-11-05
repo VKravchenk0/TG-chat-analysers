@@ -43,6 +43,7 @@ def count_language_percentages(messages, counter_type: LanguagePercentageCounter
     else:
         raise NotImplementedError(f"Processing not implemented for counter type: {counter_type}")
 
+
 def clean_data(data, user_stop_list):
     messages = filter_only_text_messages(data)
     messages = filter_users_by_stop_list(messages, user_stop_list)
@@ -65,6 +66,7 @@ def is_text_message(message):
             isinstance(message["text"], str) and message["text"].strip() == ""):
         return False
     return True
+
 
 def filter_users_by_stop_list(messages, user_stop_list):
     messages = list(filter(lambda m: user_is_not_in_stop_list(m, user_stop_list), messages))
