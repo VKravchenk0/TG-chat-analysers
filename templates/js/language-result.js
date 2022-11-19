@@ -1,3 +1,20 @@
+function createFiftyPercentLine() {
+    return {
+        type: 'line',
+        xref: 'paper',
+        x0: 0,
+        x1: 1,
+        y0: 50,
+        y1: 50,
+        yref: 'y',
+        line: {
+          color: 'black',
+          width: 1,
+          dash: 'dot'
+        }
+    };
+}
+
 var pathname = window.location.pathname
 $.ajax({
     url: `/api${pathname}`,
@@ -6,28 +23,103 @@ $.ajax({
         console.log("Results from BE:")
         console.log(result)
         var plotDiv = document.getElementById('plot');
+        var dataToPrint = {};
+        parsedDates = parseDates(result.week_start);
+
         var traces = [
             {
-                x: result.week_start,
+                type: 'scatter',
+                x: parsedDates,
                 y: result.uk_percentage,
                 stackgroup: 'one',
                 name: 'Українська',
                 line: {
-//                    width: 0,
                     color: '#0057B8'
                 }
             },
             {
-                x: result.week_start,
+                type: 'scatter',
+                x: parsedDates,
                 y: result.ru_percentage,
                 stackgroup: 'one',
                 name: 'Російська',
                 line: {
-                    width: 0,
                     color: '#DA291C'
                 }
             }
         ];
+
+        var shapes = [];
+        var annotations = [];
+
+        shapes.push(createFiftyPercentLine());
+
+        if (dateInRange(parsedDates, '21/02/2021')) {
+            console.log("adding line for 21/02/2021")
+            shapes.push({
+                type: 'line',
+                x0: parseDate('21/02/2021'),
+                xref: 'x',
+                y0: 0,
+                x1: parseDate('21/02/2021'),
+                yref: 'y',
+                y1: 100,
+                fillcolor: 'black',
+                opacity: 0.5,
+                line: {
+                    width: 2
+                }
+            });
+
+            annotations.push({
+                  x: parseDate('21/02/2021'),
+                  y: 20,
+                  xref: 'x',
+                  yref: 'y',
+                  text: '21/02/2021',
+                  showarrow: true,
+                  arrowhead: 0,
+                  ax: 100,
+                  ay: -20,
+                  font: {
+                    size: 18,
+                  },
+            });
+        }
+
+
+        if (dateInRange(parsedDates, '24/02/2022')) {
+            console.log("adding line for 24/02/2022")
+            shapes.push({
+                type: 'line',
+                x0: parseDate('24/02/2022'),
+                xref: 'x',
+                y0: 0,
+                x1: parseDate('24/02/2022'),
+                yref: 'y',
+                y1: 100,
+                fillcolor: 'black',
+                opacity: 0.5,
+                line: {
+                    width: 2
+                }
+            });
+
+            annotations.push({
+                  x: parseDate('24/02/2022'),
+                  y: 30,
+                  xref: 'x',
+                  yref: 'y',
+                  text: '24/02',
+                  showarrow: true,
+                  arrowhead: 0,
+                  ax: 40,
+                  ay: -10,
+                  font: {
+                    size: 18,
+                  },
+            });
+        }
 
         var layout = {
             title: 'Відосоток повідомлень українською і російською мовами',
@@ -37,7 +129,9 @@ $.ajax({
             },
             yaxis: {
                 title: 'Відсоток повідомлень'
-            }
+            },
+            shapes: shapes,
+            annotations: annotations
         }
 
         Plotly.newPlot('myDiv', traces, layout);

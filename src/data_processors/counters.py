@@ -128,13 +128,15 @@ class WeightedLanguagePercentageCounter(AbstractLanguagePercentageCounter):
     def count_percentages_by_weeks(self, lang_by_users):
         result = {}
         for week_start, users_lang_percentage in lang_by_users.items():
+            print("---------------")
+            print(f"Week start: {week_start}")
             total_percentages = self.count_percentage_by_week(users_lang_percentage)
             result[week_start] = total_percentages
         return result
 
     def count_percentage_by_week(self, input_list):
         avg_messages_per_user = (sum(u['uk'] + u['ru'] for u in input_list)) / len(input_list)
-        print(f'avg number of messages per user: {avg_messages_per_user}')
+        print(f'Average number of messages per user: {avg_messages_per_user}')
 
         for u in input_list:
             id = u['user_id']
@@ -146,12 +148,12 @@ class WeightedLanguagePercentageCounter(AbstractLanguagePercentageCounter):
             'ru': 0
         }
 
-        print('----- counting weights')
+        print('----- Counting weights')
         for u in input_list:
             print('')
             weight = u['weight']
-            print(f'UUUser: {u}')
-            print(f"weight for user {u['user_id']}: {u['weight']}")
+            print(f'User: {u}')
+            print(f"Weight for user {u['user_id']}: {u['weight']}")
             weighted_uk_messages = u['uk'] * weight
             print(f"weighted uk messages: {weighted_uk_messages}")
             weighted_messages_per_language['uk'] = weighted_messages_per_language['uk'] + weighted_uk_messages
