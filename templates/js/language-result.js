@@ -54,40 +54,6 @@ $.ajax({
 
         shapes.push(createFiftyPercentLine());
 
-        if (dateInRange(parsedDates, '21/02/2021')) {
-            console.log("adding line for 21/02/2021")
-            shapes.push({
-                type: 'line',
-                x0: parseDate('21/02/2021'),
-                xref: 'x',
-                y0: 0,
-                x1: parseDate('21/02/2021'),
-                yref: 'y',
-                y1: 100,
-                fillcolor: 'black',
-                opacity: 0.5,
-                line: {
-                    width: 2
-                }
-            });
-
-            annotations.push({
-                  x: parseDate('21/02/2021'),
-                  y: 20,
-                  xref: 'x',
-                  yref: 'y',
-                  text: '21/02/2021',
-                  showarrow: true,
-                  arrowhead: 0,
-                  ax: 100,
-                  ay: -20,
-                  font: {
-                    size: 18,
-                  },
-            });
-        }
-
-
         if (dateInRange(parsedDates, '24/02/2022')) {
             console.log("adding line for 24/02/2022")
             shapes.push({
