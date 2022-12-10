@@ -14,6 +14,15 @@
                 <input type="text" id="result_file_name" name="result-file-name" />
                 <br/>
                 <br/>
+                <label for="counter_type">Тип підрахунку:</label>
+                <select name="counter-type" id="counter_type">
+                  <option
+                          title="Що більше користувач написав повідомлень за часовий проміжок - тим меншу вагу матиме кожне окреме його повідомлення при підрахунку"
+                          value="WEIGHTED">Зважений</option>
+                  <option value="SIMPLE">Звичайний</option>
+                </select>
+                <br/>
+                <br/>
                 <input type="file" id="file" name="file" />
                 <input type="button" class="button" value="Upload" id="btn_upload">
             </div>

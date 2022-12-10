@@ -5,13 +5,17 @@ $(document).ready(function(){
         var files = $('#file')[0].files;
         var user_stop_list = $('#user_stop_list').val().trim();
         var result_file_name = $('#result_file_name').val().trim();
+        var counter_type = $('#counter_type').val().trim();
         console.log("Stop list:");
         console.log(user_stop_list);
+        console.log("Counter type:");
+        console.log(counter_type);
         // Check file selected or not
         if (files.length > 0) {
            fd.append('file', files[0]);
            fd.append('user_stop_list', user_stop_list);
            fd.append('result_file_name', result_file_name);
+           fd.append('counter_type', counter_type);
 
            $.ajax({
               url: '/api/language/upload',
