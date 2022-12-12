@@ -6,6 +6,8 @@ $(document).ready(function(){
         var user_stop_list = $('#user_stop_list').val().trim();
         var result_file_name = $('#result_file_name').val().trim();
         var counter_type = $('#counter_type').val().trim();
+        var number_of_users = $('#number_of_users').val().trim();
+        var location = $('#location').val().trim();
         console.log("Stop list:");
         console.log(user_stop_list);
         console.log("Counter type:");
@@ -16,6 +18,8 @@ $(document).ready(function(){
            fd.append('user_stop_list', user_stop_list);
            fd.append('result_file_name', result_file_name);
            fd.append('counter_type', counter_type);
+           fd.append('number_of_users', number_of_users);
+           fd.append('location', location);
 
            $.ajax({
               url: '/api/language/upload',

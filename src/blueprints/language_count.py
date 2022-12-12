@@ -33,6 +33,12 @@ def upload_file():
         counter_type = LanguagePercentageCounterType[request_counter_type]
     print(f"selected counter type: {counter_type}")
 
+    chat_info = {}
+    if 'location' in request.form:
+        chat_info['location'] = request.form.get('location')
+    if 'number_of_users' in request.form:
+        chat_info['number_of_users'] = request.form.get('number_of_users')
+
     raw_input_result_file_name = request.form['result_file_name']
     print(f"Raw result file name: {raw_input_result_file_name}")
 
@@ -42,7 +48,7 @@ def upload_file():
 
     data = json.load(input_file)
     async_start_job(count_lang_percentage_and_save_to_file,
-                    (data, sanitized_input_result_file_name, user_stop_list, counter_type)
+                    (data, chat_info, sanitized_input_result_file_name, user_stop_list, counter_type)
                     )
     return sanitized_input_result_file_name
 
