@@ -24,3 +24,13 @@ function dateInRange(datesArray, dateString) {
 	console.log(`Result: ${result}`);
 	return result;
 }
+
+function getMonthStartsArray(datesArray) {
+    let result = [];
+    for (let i = 0; i < datesArray.length; i++) {
+        let date = datesArray[i];
+        let firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+        result.push(firstDayOfMonth);
+    }
+    return result;
+}

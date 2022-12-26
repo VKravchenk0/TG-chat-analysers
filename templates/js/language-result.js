@@ -88,10 +88,13 @@ $.ajax({
         }
 
         var layout = {
-            title: 'Відосоток повідомлень українською і російською мовами',
+            title: 'Відсоток повідомлень українською і російською мовами',
             hovermode: 'x unified',
             xaxis: {
-                title: 'Дата'
+                title: 'Дата',
+                tickmode: "array",
+                tickvals: getMonthStartsArray(parsedDates),
+                tickformat: '%m/%Y' // For more time formatting types, see: https://github.com/d3/d3-time-format/blob/master/README.md
             },
             yaxis: {
                 title: 'Відсоток повідомлень'
