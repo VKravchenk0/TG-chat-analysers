@@ -4,8 +4,7 @@ import uuid
 
 from pathvalidate import sanitize_filename
 from settings import LANG_PERCENTAGE_RESULT_FOLDER, MOST_ACTIVE_MEMBERS_RESULT_FOLDER
-from src.data_processors.counters import LanguagePercentageCounterType
-
+from src.data_processors.counters import LanguagePercentageCounterType, TimeSpanType
 
 
 def get_language_percentage_result_abs_file_name(file_name):
@@ -17,12 +16,13 @@ def get_most_active_members_result_abs_file_name(file_name):
 
 
 def validate_and_return_input_file_name(result_folder, raw_input_result_file_name,
-                                        counter_type: LanguagePercentageCounterType) -> str:
+                                        counter_type: LanguagePercentageCounterType,
+                                        timespan_type: TimeSpanType) -> str:
     result_file_name_without_extension = get_file_name_based_on_user_input(raw_input_result_file_name, result_folder)
     if not result_file_name_without_extension:
         # create random file name
-        return f"{uuid.uuid1()}_{counter_type.name}"
-    return f"{result_file_name_without_extension}_{counter_type.name}"
+        return f"{uuid.uuid1()}_{counter_type.name}_{timespan_type.name}"
+    return f"{result_file_name_without_extension}_{counter_type.name}_{timespan_type.name}"
 
 
 def get_file_name_based_on_user_input(raw_input_result_file_name, result_folder):

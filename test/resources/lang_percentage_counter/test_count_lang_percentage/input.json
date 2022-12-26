@@ -21,7 +21,8 @@
     "ru": "50%"
    },
    "week2": "avg_messages = 5\nw_1 = 5/8 = 0.625\nw_2 = 5/2 = 2.5\n\nn_1_ru = 7*0.625 = 4.375\nn_1_uk = 1*0.625 = 0.625\nn_2_uk = 2*2.5 = 5\n\nru = 4.375\nuk = 5.625\n\nru_percentage = 43.75\nuk_percentage = 56.25"
-  }
+  },
+  "expectedResultWeightsMonthly": "avg_messages = (3 + 10)/2 = 6.5\nw1 = 6.5/10 = 0.65\nw2 = 6.5/3 = 2.16666666667\n\nn_1_ru = 9 * 0.65 = 5.85\nn_1_uk = 1 * 0.65 = 0.65\nn_2_uk = 3 * 2.16666666667 = 6.5\n\nru = 5.85\nuk = 7.15\n\ntotal_weighted = 13\n\nru_percentage = 45%\nuk_percentage = 55%"
 
  },
  "messages": [

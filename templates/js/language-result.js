@@ -24,7 +24,7 @@ $.ajax({
         console.log(result)
         var plotDiv = document.getElementById('plot');
         var dataToPrint = {};
-        parsedDates = parseDates(result.week_start);
+        parsedDates = parseDates(result.timespan_start);
 
         var traces = [
             {

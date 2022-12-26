@@ -13,101 +13,114 @@ class LanguagePercentageCounterType(Enum):
     WEIGHTED = 2
 
 
+class TimeSpanType(Enum):
+    WEEK = 1
+    MONTH = 2
+
+
 class AbstractLanguagePercentageCounter(ABC):
 
     @abstractmethod
-    def count_language_percentages(self, messages):
+    def count_language_percentages(self, messages, timespan_type: TimeSpanType):
         pass
 
 
 class SimpleLanguagePercentageCounter(AbstractLanguagePercentageCounter):
-    def count_language_percentages(self, messages):
-        number_of_messages_by_weeks = self.count_number_of_messages_by_time_period(messages)
-        lang_percentage_by_weeks = self.count_percentages(number_of_messages_by_weeks)
-        result = self.convert_to_result_dto(lang_percentage_by_weeks)
+    def count_language_percentages(self, messages, timespan_type: TimeSpanType):
+        number_of_messages_by_timespans = self.count_number_of_messages_by_time_period(messages)
+        lang_percentage_by_timespans = self.count_percentages(number_of_messages_by_timespans)
+        result = self.convert_to_result_dto(lang_percentage_by_timespans)
         return result
 
     def count_number_of_messages_by_time_period(self, messages):
         minimized_messages = list(map(self.extract_lang_and_date, enumerate(messages)))
-        number_of_messages_by_weeks = {}
+        number_of_messages_by_timespans = {}
         for m in minimized_messages:
-            if m['beginning_of_week_str'] not in number_of_messages_by_weeks:
-                number_of_messages_by_weeks[m['beginning_of_week_str']] = {'uk': 0, 'ru': 0}
-            number_of_messages_by_weeks[m['beginning_of_week_str']][m['lang']] = \
-                number_of_messages_by_weeks[m['beginning_of_week_str']][m['lang']] + 1
-        return number_of_messages_by_weeks
+            if m['beginning_of_timespan_str'] not in number_of_messages_by_timespans:
+                number_of_messages_by_timespans[m['beginning_of_timespan_str']] = {'uk': 0, 'ru': 0}
+            number_of_messages_by_timespans[m['beginning_of_timespan_str']][m['lang']] = \
+                number_of_messages_by_timespans[m['beginning_of_timespan_str']][m['lang']] + 1
+        return number_of_messages_by_timespans
 
     def extract_lang_and_date(self, index_message_tuple):
         index = index_message_tuple[0]
         message = index_message_tuple[1]
         dt = datetime.fromisoformat(message["date"])
-        week_start = dt - timedelta(days=dt.weekday())
+        timespan_start = dt - timedelta(days=dt.weekday())
         result = {
             'lang': message["detected_lang"],
             'date': dt,
-            'beginning_of_week': week_start,
-            'beginning_of_week_str': week_start.strftime("%d/%m/%Y"),
+            'beginning_of_timespan': timespan_start,
+            'beginning_of_timespan_str': timespan_start.strftime("%d/%m/%Y"),
         }
         return result
 
-    def count_percentages(self, number_of_messages_by_weeks):
+    def count_percentages(self, number_of_messages_by_timespans):
         messages_percentage = {}
-        for week_start, messages_counts in number_of_messages_by_weeks.items():
-            if week_start not in messages_percentage:
-                messages_percentage[week_start] = {'uk': 0.0, 'ru': 0.0}
-            total_number_of_messages_per_week = messages_counts['uk'] + messages_counts['ru']
-            uk_percentage = percentage(messages_counts['uk'], total_number_of_messages_per_week)
-            ru_percentage = percentage(messages_counts['ru'], total_number_of_messages_per_week)
-            messages_percentage[week_start]['uk'] = uk_percentage
-            messages_percentage[week_start]['ru'] = ru_percentage
+        for timespan_start, messages_counts in number_of_messages_by_timespans.items():
+            if timespan_start not in messages_percentage:
+                messages_percentage[timespan_start] = {'uk': 0.0, 'ru': 0.0}
+            total_number_of_messages_per_timespan = messages_counts['uk'] + messages_counts['ru']
+            uk_percentage = percentage(messages_counts['uk'], total_number_of_messages_per_timespan)
+            ru_percentage = percentage(messages_counts['ru'], total_number_of_messages_per_timespan)
+            messages_percentage[timespan_start]['uk'] = uk_percentage
+            messages_percentage[timespan_start]['ru'] = ru_percentage
             print(
-                f"Week: {week_start}. Total number of messages: {total_number_of_messages_per_week}. Uk: {messages_counts['uk']}. Ru: {messages_counts['ru']}. Uk percentage: {uk_percentage}. Ru percentage: {ru_percentage}")
+                f"Timespan: {timespan_start}. Total number of messages: {total_number_of_messages_per_timespan}. Uk: {messages_counts['uk']}. Ru: {messages_counts['ru']}. Uk percentage: {uk_percentage}. Ru percentage: {ru_percentage}")
         return messages_percentage
 
     def convert_to_result_dto(self, messages_percentage):
         result = {
-            'week_start': [],
+            'timespan_start': [],
             'uk_percentage': [],
             'ru_percentage': []
         }
-        for week_start, language_percentages in messages_percentage.items():
-            result['week_start'].append(week_start)
+        for timespan_start, language_percentages in messages_percentage.items():
+            result['timespan_start'].append(timespan_start)
             result['uk_percentage'].append(language_percentages['uk'])
             result['ru_percentage'].append(language_percentages['ru'])
         return result
 
 
 class WeightedLanguagePercentageCounter(AbstractLanguagePercentageCounter):
-    def count_language_percentages(self, messages):
+    def count_language_percentages(self, messages, timespan_type: TimeSpanType):
 
-        # split into weekly chunks
-        messages_by_weeks = self.get_messages_by_weeks(messages)
-        lang_by_users = self.get_language_by_users(messages_by_weeks)
-        # count percentage for each week
-        percentages_by_weeks = self.count_percentages_by_weeks(lang_by_users)
-        result = self.convert_to_expected_format(percentages_by_weeks)
+        # split into timespan chunks
+        messages_by_timespans = self.get_messages_by_timespans(messages, timespan_type)
+        lang_by_users = self.get_language_by_users(messages_by_timespans)
+        # count percentage for each timespan
+        percentages_by_timespans = self.count_percentages_by_timespans(lang_by_users)
+        result = self.convert_to_expected_format(percentages_by_timespans)
         return result
 
-    def get_messages_by_weeks(self, messages):
-        messages_by_weeks = {}
+    def get_messages_by_timespans(self, messages, timespan_type: TimeSpanType):
+        messages_by_timespans = {}
         for message in messages:
-            dt = datetime.fromisoformat(message["date"])
-            week_start = dt - timedelta(days=dt.weekday())
-            week_start_str = week_start.strftime("%d/%m/%Y")
-            if week_start_str not in messages_by_weeks:
-                messages_by_weeks[week_start_str] = []
-            messages_by_weeks[week_start_str].append(message)
-        return messages_by_weeks
+            timespan_start_str = self.get_timespan_start_date(message, timespan_type)
+            if timespan_start_str not in messages_by_timespans:
+                messages_by_timespans[timespan_start_str] = []
+            messages_by_timespans[timespan_start_str].append(message)
+        return messages_by_timespans
 
-    def get_language_by_users(self, messages_by_weeks):
+    def get_timespan_start_date(self, message, timespan_type):
+        dt = datetime.fromisoformat(message["date"])
+        # beginning of the week by default
+        timespan_start = dt - timedelta(days=dt.weekday())
+        if timespan_type == TimeSpanType.MONTH:
+            # beginning of the month
+            timespan_start = dt - timedelta(days=(dt.day - 1))
+        timespan_start_str = timespan_start.strftime("%d/%m/%Y")
+        return timespan_start_str
+
+    def get_language_by_users(self, messages_by_timespans):
         result = {}
-        for week_start, messages in messages_by_weeks.items():
-            r = self.count_messages_by_user_in_a_week_chunk(messages)
-            result[week_start] = r
+        for timespan_start, messages in messages_by_timespans.items():
+            r = self.count_messages_by_user_in_a_timespan_chunk(messages)
+            result[timespan_start] = r
             
         return result
 
-    def count_messages_by_user_in_a_week_chunk(self, messages):
+    def count_messages_by_user_in_a_timespan_chunk(self, messages):
         result = {}
         for m in messages:
             if m['from_id'] not in result:
@@ -125,16 +138,16 @@ class WeightedLanguagePercentageCounter(AbstractLanguagePercentageCounter):
             
         return result
 
-    def count_percentages_by_weeks(self, lang_by_users):
+    def count_percentages_by_timespans(self, lang_by_users):
         result = {}
-        for week_start, users_lang_percentage in lang_by_users.items():
+        for timespan_start, users_lang_percentage in lang_by_users.items():
             print("---------------")
-            print(f"Week start: {week_start}")
-            total_percentages = self.count_percentage_by_week(users_lang_percentage)
-            result[week_start] = total_percentages
+            print(f"Timespan start: {timespan_start}")
+            total_percentages = self.count_percentage_by_timespan(users_lang_percentage)
+            result[timespan_start] = total_percentages
         return result
 
-    def count_percentage_by_week(self, input_list):
+    def count_percentage_by_timespan(self, input_list):
         avg_messages_per_user = (sum(u['uk'] + u['ru'] for u in input_list)) / len(input_list)
         print(f'Average number of messages per user: {avg_messages_per_user}')
 
@@ -178,14 +191,14 @@ class WeightedLanguagePercentageCounter(AbstractLanguagePercentageCounter):
         print(lang_percentages)
         return lang_percentages
 
-    def convert_to_expected_format(self, percentages_by_weeks):
+    def convert_to_expected_format(self, percentages_by_timespans):
         result = {
-            'week_start': [],
+            'timespan_start': [],
             'uk_percentage': [],
             'ru_percentage': []
         }
-        for week_start, percentages in percentages_by_weeks.items():
-            result['week_start'].append(week_start)
+        for timespan_start, percentages in percentages_by_timespans.items():
+            result['timespan_start'].append(timespan_start)
             result['uk_percentage'].append(percentages['uk'])
             result['ru_percentage'].append(percentages['ru'])
         return result
