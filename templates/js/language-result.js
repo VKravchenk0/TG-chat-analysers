@@ -87,17 +87,36 @@ $.ajax({
             });
         }
 
+        axisTitleSize = 16;
+        tickSize = 15;
         var layout = {
             title: 'Відсоток повідомлень українською і російською мовами',
             hovermode: 'x unified',
             xaxis: {
-                title: 'Дата',
+                title: {
+                    text: 'Дата',
+                    font: {
+                        size: axisTitleSize
+                    }
+                },
                 tickmode: "array",
                 tickvals: getMonthStartsArray(parsedDates),
-                tickformat: '%m/%Y' // For more time formatting types, see: https://github.com/d3/d3-time-format/blob/master/README.md
+                tickformat: '%m/%Y', // For more time formatting types, see: https://github.com/d3/d3-time-format/blob/master/README.md
+                tickfont: {
+                    size: tickSize
+                }
+//                gridcolor: 'red'
             },
             yaxis: {
-                title: 'Відсоток повідомлень'
+                title: {
+                    text: 'Відсоток повідомлень',
+                    font: {
+                        size: axisTitleSize
+                    }
+                },
+                tickfont: {
+                    size: tickSize
+                }
             },
             shapes: shapes,
             annotations: annotations
