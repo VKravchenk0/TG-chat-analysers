@@ -20,9 +20,7 @@ function displayDescription(result) {
         let chatInfo = result.chat_info;
         let descriptionArr = chatInfo.description.split("\n");
         descriptionArr.forEach((descLine) => {
-            $('<p>', {
-                class: 'some-class some-other-class'
-            }).html(descLine.trim()).appendTo('#result_chat_description .wrapper');
+            $('<p>', {}).html(descLine.trim()).appendTo('#result_chat_description .wrapper');
         });
 
         $('#result_chat_description').show()
@@ -87,14 +85,14 @@ $.ajax({
 
             annotations.push({
                   x: parseDate('24/02/2022'),
-                  y: 30,
+                  y: 20,
                   xref: 'x',
                   yref: 'y',
-                  text: '24/02',
+                  text: '24/02/2022',
                   showarrow: true,
-                  arrowhead: 0,
-                  ax: 40,
-                  ay: -10,
+                  arrowhead: 3,
+                  ax: 70,
+                  ay: -30,
                   font: {
                     size: 18,
                   },
