@@ -20,19 +20,23 @@ Language.factory("language_detector", func=get_lang_detector)
 nlp.add_pipe('language_detector', last=True)
 
 
-def count_lang_percentage_and_save_to_file(data, file_name, user_stop_list, counter_type, timespan_type):
-    result = count_lang_percentage(data, counter_type, timespan_type, user_stop_list)
+def count_lang_percentage_and_save_to_file(data, chat_description, file_name, user_stop_list, counter_type, timespan_type):
+    result = count_lang_percentage(data, chat_description, counter_type, timespan_type, user_stop_list)
     pickle.dump(result, open(get_language_percentage_result_abs_file_name(file_name), "wb"))
     print("count_lang_percentage_and_save_to_file -> end")
 
 
-def count_lang_percentage(data, counter_type, timespan_type, user_stop_list=[]):
+def count_lang_percentage(data, chat_description, counter_type, timespan_type, user_stop_list=[]):
     print("count_lang_percentage_and_save_to_file -> start")
     print(f"original messages length: {len(data['messages'])}")
     messages = clean_data(data, user_stop_list)
     messages = detect_language(messages)
     messages = remove_messages_in_irrelevant_languages(messages)
     result = count_language_percentages(messages, counter_type, timespan_type)
+    result["chat_info"] = {
+        'name': data["name"],
+        'description': chat_description
+    }
     return result
 
 

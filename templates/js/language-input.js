@@ -7,12 +7,15 @@ $(document).ready(function(){
         var result_file_name = $('#result_file_name').val().trim();
         var counter_type = $('#counter_type').val().trim();
         var timespan_type = $('#timespan_type').val().trim();
+        var chat_description = $('#chat_description').val().trim();
         console.log("Stop list:");
         console.log(user_stop_list);
         console.log("Counter type:");
         console.log(counter_type);
         console.log("Timespan type:");
         console.log(timespan_type);
+        console.log("Chat description:");
+        console.log(chat_description);
         // Check file selected or not
         if (files.length > 0) {
            fd.append('file', files[0]);
@@ -20,6 +23,7 @@ $(document).ready(function(){
            fd.append('result_file_name', result_file_name);
            fd.append('counter_type', counter_type);
            fd.append('timespan_type', timespan_type);
+           fd.append('chat_description', chat_description);
 
            $.ajax({
               url: '/api/language/upload',

@@ -40,6 +40,12 @@ def upload_file():
         timespan_type = TimeSpanType[request_timespan_type]
     print(f"selected timespan type: {timespan_type}")
 
+    chat_description = {}
+    if 'chat_description' in request.form:
+        chat_description = request.form.get('chat_description')
+        print("chat description:")
+        print(chat_description)
+
     raw_input_result_file_name = request.form['result_file_name']
     print(f"Raw result file name: {raw_input_result_file_name}")
 
@@ -50,7 +56,7 @@ def upload_file():
 
     data = json.load(input_file)
     async_start_job(count_lang_percentage_and_save_to_file,
-                    (data, sanitized_input_result_file_name, user_stop_list, counter_type, timespan_type)
+                    (data, chat_description, sanitized_input_result_file_name, user_stop_list, counter_type, timespan_type)
                     )
     return sanitized_input_result_file_name
 

@@ -15,6 +15,20 @@ function createFiftyPercentLine() {
     };
 }
 
+function displayDescription(result) {
+    if (result.chat_info && result.chat_info.description) {
+        let chatInfo = result.chat_info;
+        let descriptionArr = chatInfo.description.split("\n");
+        descriptionArr.forEach((descLine) => {
+            $('<p>', {
+                class: 'some-class some-other-class'
+            }).html(descLine.trim()).appendTo('#result_chat_description .wrapper');
+        });
+
+        $('#result_chat_description').show()
+    }
+}
+
 var pathname = window.location.pathname
 $.ajax({
     url: `/api${pathname}`,
@@ -121,6 +135,8 @@ $.ajax({
             shapes: shapes,
             annotations: annotations
         }
+
+        displayDescription(result);
 
         Plotly.newPlot('myDiv', traces, layout);
     },

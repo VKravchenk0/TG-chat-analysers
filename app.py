@@ -1,9 +1,9 @@
 from flask import Flask
 from werkzeug.utils import redirect
 
-from src.blueprints.language_count import language_count_bp
-from src.blueprints.most_active_members import most_active_members_count_bp
-from src.blueprints.static import static_files_blueprint
+from src.blueprints.language_count_blueprint import language_count_bp
+from src.blueprints.most_active_members_blueprint import most_active_members_count_bp
+from src.blueprints.static_blueprint import static_files_blueprint
 
 # кількість повідомлень на один день перебування в чаті (?)
 def create_app():
