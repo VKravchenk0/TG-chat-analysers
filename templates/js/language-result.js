@@ -131,7 +131,12 @@ $.ajax({
                 }
             },
             shapes: shapes,
-            annotations: annotations
+            annotations: annotations,
+            legend: {
+                x: 0,
+                y: 4,
+                traceorder: "normal"
+            }
         }
 
         displayDescription(result);
