@@ -46,7 +46,7 @@ $.ajax({
                 stackgroup: 'one',
                 name: 'Українська',
                 line: {
-                    color: '#0057B8'
+                    color: '#0057B7'
                 }
             },
             {
@@ -56,7 +56,7 @@ $.ajax({
                 stackgroup: 'one',
                 name: 'Російська',
                 line: {
-                    color: '#DA291C'
+                    color: '#FF2B12'
                 }
             }
         ];
@@ -116,8 +116,10 @@ $.ajax({
                 tickformat: '%m/%Y', // For more time formatting types, see: https://github.com/d3/d3-time-format/blob/master/README.md
                 tickfont: {
                     size: tickSize
-                }
-//                gridcolor: 'red'
+                },
+                gridcolor: '#eee',
+                griddash: 'solid',
+                gridwidth: 1.5
             },
             yaxis: {
                 title: {
