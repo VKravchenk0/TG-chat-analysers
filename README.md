@@ -1,5 +1,16 @@
-### How to use:
+This is a flask app. Entry point is `app.py`.
+Contains two pages/sub-apps:
+1. Language usage counter (see `src/blueprints/langugage_count_blueprint.py`, http://localhost:5000/language)
+2. Most active members counter (see `src/blueprints/most_active_members_blueprint.py`, http://localhost:5000/most-active-members)
+
+Quickstart:
+1. (Optional) Create virtual environment.
+2. Install dependencies: `pip install requirements.txt`
+3. Run the app: `flask run` or `python app.py`
+4. Go to http://localhost:5000
+
+How to use:
 1. Export chat from telegram in json format with text only (without pictures/images)
-2. Put the file into resources/result.json
-3. Run main.py. It will generate /resources/save.p.
-4. Run app.py, go to index page
+2. Go to the respective page (`/language` or `/most-active-members`)
+3. Fill the form if needed and pick a file from the previous step
+4. Wait until the processing is over, and open the provided link
