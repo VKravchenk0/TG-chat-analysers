@@ -10,7 +10,7 @@ Quickstart:
 4. Go to http://localhost:5000
 
 How to use:
-1. Export chat from telegram in json format with text only (without pictures/images)
-2. Go to the respective page (`/language` or `/most-active-members`)
-3. Fill the form if needed and pick a file from the previous step
-4. Wait until the processing is over, and open the provided link
+1. Using Telegram desctop, export telegram chat in json format with text only (without pictures/images).
+2. Go to the respective page (`/language` or `/most-active-members`).
+3. Fill the form if needed and pick a file from the previous step. Submit the form.
+4. Wait until the processing is over, and open the provided link.
