@@ -12,6 +12,8 @@
 /resources/result_test.json
 stop_lists
 data
+data_old
+results_images
 
 # User-specific stuff
 .idea/**/workspace.xml

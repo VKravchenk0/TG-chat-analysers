@@ -102,7 +102,7 @@ $.ajax({
         axisTitleSize = 16;
         tickSize = 15;
         var layout = {
-            title: 'Відсоток повідомлень українською і російською мовами',
+            title: 'Приріст використання української мови в телеграм-чатах',
             hovermode: 'x unified',
             xaxis: {
                 title: {
@@ -130,7 +130,8 @@ $.ajax({
                 },
                 tickfont: {
                     size: tickSize
-                }
+                },
+                gridwidth: 1.5
             },
             shapes: shapes,
             annotations: annotations,
